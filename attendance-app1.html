@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Roll Call — Attendance</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef2f6;--surface:#fff;--ink:#14213d;--muted:#5d6b82;--line:#d8e0ea;--accent:#1f4fd8;--accent-ink:#fff;--p:#1b8a5a;--pbg:#dcf3e8;--l:#b7791f;--lbg:#fbefd2;--a:#c53030;--abg:#fbdede;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1524;--surface:#172036;--ink:#e8edf7;--muted:#94a3bd;--line:#2a3650;--accent:#6b8cff;--accent-ink:#0e1524;--p:#4fd195;--pbg:#143b2c;--l:#f0b85a;--lbg:#41330f;--a:#ff7b7b;--abg:#472025;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1524;--surface:#172036;--ink:#e8edf7;--muted:#94a3bd;--line:#2a3650;--accent:#6b8cff;--accent-ink:#0e1524;--p:#4fd195;--pbg:#143b2c;--l:#f0b85a;--lbg:#41330f;--a:#ff7b7b;--abg:#472025;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Figtree,system-ui,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 64px}
+h1{font:800 32px/1.1 'Bricolage Grotesque',Figtree,sans-serif;margin:0;letter-spacing:-.02em}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:16px}
+.tabs button{flex:1;border:0;background:none;color:var(--muted);font:600 15px Figtree,sans-serif;padding:9px;border-radius:9px;cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--accent);color:var(--accent-ink)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.bar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.date{flex:1;text-align:center;font:700 20px 'Bricolage Grotesque',Figtree,sans-serif;min-width:180px}
+.date small{display:block;font:500 13px Figtree,sans-serif;color:var(--muted)}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px Figtree,sans-serif;padding:9px 14px;border-radius:10px;cursor:pointer}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.stat b{display:block;font:800 26px/1.1 'Bricolage Grotesque',Figtree,sans-serif}
+.stat span{font-size:13px;color:var(--muted)}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.who{min-width:0}.who b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.who span{font-size:13px;color:var(--muted)}
+.seg{display:flex;gap:4px;flex:none}
+.seg button{width:44px;height:40px;border:1.5px solid var(--line);background:none;border-radius:10px;font:700 15px Figtree,sans-serif;color:var(--muted);cursor:pointer}
+.seg button.P[aria-pressed=true]{background:var(--pbg);border-color:var(--p);color:var(--p)}
+.seg button.L[aria-pressed=true]{background:var(--lbg);border-color:var(--l);color:var(--l)}
+.seg button.A[aria-pressed=true]{background:var(--abg);border-color:var(--a);color:var(--a)}
+.empty{padding:28px 16px;text-align:center;color:var(--muted)}
+.add{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+input{flex:1;min-width:140px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:16px Figtree,sans-serif;padding:10px 12px;border-radius:10px}
+input[type=date]{flex:none}
+.rep{padding:12px 14px;border-bottom:1px solid var(--line)}
+.rep:last-child{border-bottom:0}
+.rep .top{display:flex;justify-content:space-between;gap:8px;font-weight:600}
+.meter{height:8px;background:var(--line);border-radius:6px;overflow:hidden;margin:8px 0 4px;display:flex}
+.meter i{display:block;height:100%}
+.rep small{color:var(--muted)}
+.x{border:0;background:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px 8px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+.clock{text-align:center;margin:8px 0 16px}.clock b{display:block;font:800 44px/1 'Bricolage Grotesque',Figtree,sans-serif;font-variant-numeric:tabular-nums}.clock span{color:var(--muted);font-size:14px}
+.lbl{display:block;font-weight:600;margin-bottom:6px}
+select{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:16px Figtree,sans-serif;padding:12px;border-radius:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin:14px 0;text-align:center}.card p{margin:0 0 12px;font-weight:600}
+.big{width:100%;min-height:72px;border:0;border-radius:16px;font:800 24px 'Bricolage Grotesque',Figtree,sans-serif;cursor:pointer}
+.th{width:96px;height:96px;object-fit:cover;border-radius:12px;display:block;margin:0 auto 12px}.ths{display:flex;gap:8px;justify-content:center;margin-bottom:12px}.ths .th{margin:0}
+.lnk{display:block;margin:12px auto 0;border:0;background:none;color:var(--muted);text-decoration:underline;font:500 14px Figtree,sans-serif;cursor:pointer;padding:8px}
+.note{font-size:13px;color:var(--muted);margin-top:10px}
+.cm{position:fixed;inset:0;z-index:50;background:rgba(5,10,20,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+.cm[hidden]{display:none}
+.vw{position:relative;width:100%;max-width:420px}
+.vw video{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:16px;background:#000;transform:scaleX(-1);display:block}
+.vw .ov{position:absolute;left:50%;top:50%;width:46%;height:76%;transform:translate(-50%,-50%);border:3px dashed rgba(255,255,255,.85);border-radius:50%;pointer-events:none}
+#cs{color:#fff;text-align:center;min-height:44px;max-width:420px;font-weight:500}
+.row2{display:flex;gap:8px;width:100%;max-width:420px;flex-wrap:wrap}.row2 .btn{flex:1;min-width:120px}
+.big.in{background:var(--p);color:var(--bg)}.big.out{background:var(--ink);color:var(--bg)}
+h2{font:700 18px 'Bricolage Grotesque',Figtree,sans-serif;margin:20px 0 8px}
+@media(max-width:420px){.stats{grid-template-columns:repeat(2,1fr)}.seg button{width:40px}.tabs button{font-size:14px;padding:9px 2px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tracking.js/1.1.3/tracking-min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tracking.js/1.1.3/data/face-min.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>Roll Call</h1><button class="btn" id="exp">Copy CSV</button></header>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="t-chk" aria-selected="true">Check in</button>
+    <button role="tab" id="t-day" aria-selected="false">Register</button>
+    <button role="tab" id="t-rep" aria-selected="false">Report</button>
+    <button role="tab" id="t-ppl" aria-selected="false">People</button>
+  </div>
+  <main id="main"></main>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<input type="file" id="cam" accept="image/*" capture="user" hidden>
+<div class="cm" id="cm" hidden role="dialog" aria-label="Take a photo"><div class="vw" id="vw"><video id="cv" playsinline muted autoplay></video><div class="ov"></div></div><div id="cs" role="status"></div><div class="row2"><button class="btn pri" id="snap">Take photo</button><button class="btn" id="phcam">Use phone camera app</button><button class="btn" id="cclose">Cancel</button></div></div>
+<script>
+(function(){
+var KEY='rollcall-v1',state,view='chk',date=today(),pend='',photo='',go=false;
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function load(){try{var r=localStorage.getItem(KEY);if(r)return JSON.parse(r)}catch(e){}
+  return {people:[['Amina Khan','Grade 8'],['Bilal Ahmed','Grade 8'],['Chen Wei','Grade 8'],['Diana Lopez','Grade 8'],['Ethan Brooks','Grade 8'],['Fatima Noor','Grade 8']].map(function(p,i){return{id:'p'+i,name:p[0],group:p[1]}}),rec:{}}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast('Storage full: photo not saved')}}
+state=load();state.times=state.times||{};state.cutoff=state.cutoff||'09:00';
+var $=function(id){return document.getElementById(id)};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(function(){t.classList.remove('on')},1800)}
+function shift(n){var d=new Date(date+'T00:00:00');d.setDate(d.getDate()+n);date=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function label(d){return new Date(d+'T00:00:00').toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'})}
+function mark(id,s){var r=state.rec[date]||(state.rec[date]={});if(r[id]===s)delete r[id];else r[id]=s;if(!Object.keys(r).length)delete state.rec[date];save();render()}
+function dayView(){
+  var r=state.rec[date]||{},c={P:0,L:0,A:0},n=state.people.length;
+  state.people.forEach(function(p){if(r[p.id])c[r[p.id]]++});
+  var un=n-c.P-c.L-c.A;
+  var h='<div class="bar"><button class="btn" data-sh="-1" aria-label="Previous day">‹</button><div class="date">'+label(date).split(',')[0]+'<small>'+label(date).split(', ').slice(1).join(', ')+'</small></div><button class="btn" data-sh="1" aria-label="Next day">›</button><button class="btn" data-sh="0">Today</button></div>';
+  h+='<div class="stats"><div class="stat"><b style="color:var(--p)">'+c.P+'</b><span>Present</span></div><div class="stat"><b style="color:var(--l)">'+c.L+'</b><span>Late</span></div><div class="stat"><b style="color:var(--a)">'+c.A+'</b><span>Absent</span></div><div class="stat"><b>'+un+'</b><span>Not marked</span></div></div>';
+  if(!n)return h+'<div class="list"><div class="empty">No people yet. Add them on the People tab.</div></div>';
+  h+='<div class="bar"><button class="btn pri" id="allp">Mark all present</button><button class="btn" id="clr">Clear day</button></div><div class="list">';
+  state.people.forEach(function(p){var s=r[p.id];
+    h+='<div class="row"><div class="who"><b>'+esc(p.name)+'</b><span>'+esc(p.group)+tm(p.id)+'</span></div><div class="seg">'+
+    ['P','L','A'].map(function(k){return '<button class="'+k+'" data-id="'+p.id+'" data-s="'+k+'" aria-pressed="'+(s===k)+'" aria-label="'+{P:'Present',L:'Late',A:'Absent'}[k]+' — '+esc(p.name)+'">'+k+'</button>'}).join('')+'</div></div>'});
+  return h+'</div>';
+}
+function stats(){var days=Object.keys(state.rec).sort();return state.people.map(function(p){var c={P:0,L:0,A:0};days.forEach(function(d){var s=state.rec[d][p.id];if(s)c[s]++});var t=c.P+c.L+c.A;return{p:p,c:c,t:t,rate:t?Math.round((c.P+c.L)/t*100):null}})}
+function repView(){
+  var days=Object.keys(state.rec).length;
+  if(!days)return '<div class="list"><div class="empty">No attendance recorded yet. Mark a day and the report fills in.</div></div>';
+  var h='<p style="color:var(--muted);margin:0 0 12px">'+days+' day'+(days>1?'s':'')+' recorded. Rate counts present and late.</p><div class="list">';
+  stats().sort(function(a,b){return (a.rate==null)-(b.rate==null)||(a.rate-b.rate)}).forEach(function(s){
+    var t=s.t||1;
+    h+='<div class="rep"><div class="top"><span>'+esc(s.p.name)+'</span><span>'+(s.rate==null?'–':s.rate+'%')+'</span></div><div class="meter"><i style="width:'+s.c.P/t*100+'%;background:var(--p)"></i><i style="width:'+s.c.L/t*100+'%;background:var(--l)"></i><i style="width:'+s.c.A/t*100+'%;background:var(--a)"></i></div><small>'+s.c.P+' present · '+s.c.L+' late · '+s.c.A+' absent</small></div>'});
+  return h+'</div>';
+}
+function pplView(){
+  var h='<div class="list">';
+  if(!state.people.length)h+='<div class="empty">Add your first person below.</div>';
+  state.people.forEach(function(p){h+='<div class="row"><div class="who"><b>'+esc(p.name)+'</b><span>'+esc(p.group)+'</span></div><button class="x" data-del="'+p.id+'" aria-label="Remove '+esc(p.name)+'">✕</button></div>'});
+  return h+'</div><div class="bar" style="margin-top:12px"><label for="cut" style="flex:1">Count check-ins after this time as late</label><input type="time" id="cut" value="'+state.cutoff+'" style="flex:none;min-width:0"></div><div class="add"><input id="nm" placeholder="Full name" maxlength="60"><input id="gp" placeholder="Class or team" maxlength="40"><button class="btn pri" id="addb">Add person</button></div>';
+}
+var stream=null;
+function camOpen(){var cs=$('cs');$('cm').hidden=false;$('vw').style.display='';cs.textContent='Center your face in the oval, then take the photo.';
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){noCam();return}
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false}).then(function(s){stream=s;var v=$('cv');v.srcObject=s;if(v.play)v.play()}).catch(noCam)}
+function noCam(){$('vw').style.display='none';$('cs').textContent='Camera is blocked or unavailable. Allow camera access, or use your phone camera app.'}
+function camClose(){if(stream){stream.getTracks().forEach(function(t){t.stop()});stream=null}$('cv').srcObject=null;$('cm').hidden=true}
+function quality(c){var w=c.width,h=c.height,d=c.getContext('2d').getImageData(0,0,w,h).data,g=new Float32Array(w*h),s=0,i,j;
+  for(i=0,j=0;i<d.length;i+=4,j++){var l=.299*d[i]+.587*d[i+1]+.114*d[i+2];g[j]=l;s+=l}
+  var m=s/(w*h);if(m<55)return 'Too dark. Move to a brighter spot.';if(m>215)return 'Too bright. Avoid strong light behind you.';
+  var v=0,n=0,x,y,k,L;for(y=1;y<h-1;y++)for(x=1;x<w-1;x++){k=y*w+x;L=4*g[k]-g[k-1]-g[k+1]-g[k-w]-g[k+w];v+=L*L;n++}
+  if(v/n<20)return 'Photo is blurry. Hold still and try again.';return ''}
+function viola(c){return new Promise(function(res){
+  if(!window.tracking||!tracking.ViolaJones||!tracking.ViolaJones.classifiers||!tracking.ViolaJones.classifiers.face)return res(null);
+  var done=false,to=setTimeout(function(){if(!done){done=true;res(null)}},5000);
+  try{var t=new tracking.ObjectTracker('face');t.setInitialScale(2);t.setStepSize(2);t.setEdgesDensity(0.1);
+    t.on('track',function(e){if(done)return;done=true;clearTimeout(to);res(e.data||[])});tracking.track(c,t)}catch(err){done=true;clearTimeout(to);res(null)}})}
+function detect(c){if('FaceDetector' in window){try{return new FaceDetector({fastMode:true,maxDetectedFaces:4}).detect(c).then(function(r){return r.map(function(f){var b=f.boundingBox;return{x:b.x,y:b.y,width:b.width,height:b.height}})}).catch(function(){return viola(c)})}catch(e){}}return viola(c)}
+function validate(c){var q=quality(c);if(q)return Promise.resolve({ok:false,msg:q});
+  return detect(c).then(function(f){
+    if(f===null)return{ok:true,unverified:true};
+    if(!f.length)return{ok:false,msg:'No face found. Face the camera with your whole face in the frame.'};
+    f=f.slice().sort(function(a,b){return b.width*b.height-a.width*a.height});var r=f[0],W=c.width,H=c.height;
+    var others=f.slice(1).filter(function(o){var cx=o.x+o.width/2,cy=o.y+o.height/2;var inside=cx>r.x&&cx<r.x+r.width&&cy>r.y&&cy<r.y+r.height;return !inside&&o.width>=r.width*.5});
+    if(others.length)return{ok:false,msg:'More than one face. Only you should be in the photo.'};
+    if(r.width<W*.25)return{ok:false,msg:'Too far away. Move closer to the camera.'};
+    var cx2=r.x+r.width/2,cy2=r.y+r.height/2;
+    if(cx2<W*.25||cx2>W*.75||cy2<H*.2||cy2>H*.8)return{ok:false,msg:'Center your face in the oval.'};
+    return{ok:true}})}
+function accept(c){$('cs').textContent='Checking photo…';validate(c).then(function(r){
+  if(!r.ok){$('cs').textContent=r.msg+' Try again.';return}
+  photo=c.toDataURL('image/jpeg',.7);camClose();go=true;var b=$(pend);if(b)b.click();go=false;photo='';
+  if(r.unverified)toast('Saved. This browser cannot check faces, so only light and focus were checked.')})}
+function thumb(d,s){return d?'<img class="th" '+(s?'style="width:'+s+'px;height:'+s+'px;margin:0" ':'')+'src="'+d+'" alt="Check-in photo">':''}
+function shrink(f,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var s=Math.min(1,320/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c)};im.onerror=function(){toast('Could not read that photo')};im.src=r.result};r.onerror=function(){toast('Could not read that photo')};r.readAsDataURL(f)}
+function hm(){var d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+function mins(s){return +s.slice(0,2)*60+ +s.slice(3)}
+function dur(a,b){var m=mins(b)-mins(a);return m<0?'':Math.floor(m/60)+'h '+m%60+'m'}
+function clockStr(){return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})}
+function tm(id){var t=(state.times[date]||{})[id];return t?' · in '+t.i+(t.o?' · out '+t.o:''):''}
+function chkView(){
+  var td=today(),T=state.times[td]||{},p=state.people.filter(function(x){return x.id===state.me})[0],h='';
+  h+='<div class="clock"><b id="clk">'+clockStr()+'</b><span>'+label(td)+'</span></div>';
+  if(!state.people.length)return h+'<div class="list"><div class="empty">No people yet. Add them on the People tab.</div></div>';
+  h+='<label class="lbl" for="me">Who are you?</label><select id="me"><option value="">Choose your name</option>'+state.people.map(function(x){return '<option value="'+x.id+'"'+(p&&p.id===x.id?' selected':'')+'>'+esc(x.name)+'</option>'}).join('')+'</select>';
+  if(p){var t=T[p.id],r=(state.rec[td]||{})[p.id];
+    if(!t)h+='<div class="card"><p>You are not checked in</p><button class="big in" id="cin">Snap &amp; check in</button><div class="note">A clear photo of your face is required.</div></div>';
+    else if(!t.o)h+='<div class="card"><p>Checked in at '+t.i+(r==='L'?' (late)':'')+'</p>'+thumb(t.pi)+'<button class="big out" id="cout">Snap &amp; check out</button><div class="note">A clear photo of your face is required.</div></div>';
+    else h+='<div class="card"><p>Checked out at '+t.o+' · '+dur(t.i,t.o)+' on site</p><div class="ths">'+thumb(t.pi)+thumb(t.po)+'</div><button class="btn" id="cundo">Undo today</button></div>';
+  }
+  var inn=state.people.filter(function(x){return T[x.id]&&!T[x.id].o});
+  h+='<h2>On site now ('+inn.length+')</h2><div class="list">'+(inn.length?inn.map(function(x){return '<div class="row"><div style="display:flex;align-items:center;gap:10px;min-width:0">'+thumb(T[x.id].pi,44)+'<div class="who"><b>'+esc(x.name)+'</b><span>Since '+T[x.id].i+'</span></div></div></div>'}).join(''):'<div class="empty">Nobody is checked in.</div>')+'</div>';
+  return h;
+}
+function render(){
+  ['chk','day','rep','ppl'].forEach(function(k){$('t-'+k).setAttribute('aria-selected',view===k)});
+  $('main').innerHTML=view==='chk'?chkView():view==='day'?dayView():view==='rep'?repView():pplView();
+}
+document.addEventListener('click',function(e){
+  var t=e.target.closest('button');if(!t)return;
+  if(t.id==='t-chk'||t.id==='t-day'||t.id==='t-rep'||t.id==='t-ppl'){view=t.id.slice(2);render();return}
+  if((t.id==='cin'||t.id==='cout')&&!go){pend=t.id;camOpen();return}
+  if(t.id==='snap'){var v=$('cv');if(!stream||!v.videoWidth){$('cs').textContent='Camera is not ready yet. Use your phone camera app if this stays blank.';return}var sc=320/Math.max(v.videoWidth,v.videoHeight),cv=document.createElement('canvas');cv.width=Math.round(v.videoWidth*sc);cv.height=Math.round(v.videoHeight*sc);cv.getContext('2d').drawImage(v,0,0,cv.width,cv.height);accept(cv);return}
+  if(t.id==='phcam'){$('cam').click();return}
+  if(t.id==='cclose'){camClose();return}
+  if(t.id==='cin'||t.id==='cout'||t.id==='cundo'){var td=today(),id=state.me;if(!id)return;if(t.id!=='cundo'&&!photo)return;var T=state.times[td]=state.times[td]||{},R=state.rec[td]=state.rec[td]||{};
+    if(t.id==='cin'){var n=hm();T[id]={i:n,pi:photo};R[id]=n>state.cutoff?'L':'P';toast('Checked in at '+n)}
+    else if(t.id==='cout'){if(T[id]){T[id].o=hm();T[id].po=photo;toast('Checked out at '+T[id].o)}}
+    else{delete T[id];delete R[id];if(!Object.keys(T).length)delete state.times[td];if(!Object.keys(R).length)delete state.rec[td]}
+    save();render();return}
+  if(t.dataset.sh!==undefined){var n=+t.dataset.sh;if(n===0)date=today();else shift(n);render();return}
+  if(t.dataset.s){mark(t.dataset.id,t.dataset.s);return}
+  if(t.id==='allp'){var r=state.rec[date]=state.rec[date]||{};state.people.forEach(function(p){r[p.id]='P'});save();render();toast('Everyone marked present');return}
+  if(t.id==='clr'){delete state.rec[date];save();render();return}
+  if(t.dataset.del){var p=state.people.filter(function(x){return x.id===t.dataset.del})[0];if(p&&confirm('Remove '+p.name+' and their records?')){state.people=state.people.filter(function(x){return x.id!==p.id});Object.keys(state.rec).forEach(function(d){delete state.rec[d][p.id];if(state.times[d])delete state.times[d][p.id];if(!Object.keys(state.rec[d]).length)delete state.rec[d]});save();render()}return}
+  if(t.id==='addb'){var nm=$('nm').value.trim();if(!nm){toast('Enter a name first');$('nm').focus();return}state.people.push({id:'p'+Date.now(),name:nm,group:$('gp').value.trim()||'General'});save();render();toast('Added '+nm);return}
+  if(t.id==='exp'){
+    var rows=[['Date','Name','Class','Status','Check in','Check out']],nm2={P:'Present',L:'Late',A:'Absent'};
+    Object.keys(state.rec).sort().forEach(function(d){state.people.forEach(function(p){var s=state.rec[d][p.id];if(s){var tt=(state.times[d]||{})[p.id]||{};rows.push([d,p.name,p.group,nm2[s],tt.i||'',tt.o||''])}})});
+    var csv=rows.map(function(r){return r.map(function(v){return '"'+String(v).replace(/"/g,'""')+'"'}).join(',')}).join('\n');
+    try{navigator.clipboard.writeText(csv).then(function(){toast('CSV copied ('+(rows.length-1)+' records)')},function(){toast('Copy blocked by browser')})}catch(err){toast('Copy not supported here')}
+  }
+});
+document.addEventListener('change',function(e){
+  if(e.target.id==='me'){state.me=e.target.value;save();render()}
+  if(e.target.id==='cam'){var f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;shrink(f,function(c){if($('cm').hidden)return;accept(c)})}
+  if(e.target.id==='cut'){state.cutoff=e.target.value||'09:00';save();toast('Late after '+state.cutoff)}
+});
+setInterval(function(){var c=$('clk');if(c)c.textContent=clockStr()},1000);
+document.addEventListener('keydown',function(e){if(e.key==='Enter'&&(e.target.id==='nm'||e.target.id==='gp'))$('addb').click()});
+render();
+})();
+</script>
+</body>
+</html>
